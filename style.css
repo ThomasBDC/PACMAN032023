@@ -1,6 +1,11 @@
 body, html{
     background-color: black;
     margin: auto;
+    color:white;
+}
+
+#score{
+    text-align: center;
 }
 
 #game{

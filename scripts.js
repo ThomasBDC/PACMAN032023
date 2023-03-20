@@ -1,11 +1,13 @@
 const gameDiv = document.getElementById("game");
 const sizeCaseWidth = 28;
+const scoreHtml = document.getElementById("score");
+let score = 0;
 /*
 OK Créer le plateau (dynamique)
 OK Créer notre pacman
 OK Gérer ses déplacements (sans contrainte)
 OK Contraintes de déplacement (pas dans les murs)
-* Pièces à manger
+OK Pièces à manger
 * Gérer les fantômes
 * ...
 */
@@ -53,7 +55,8 @@ document.addEventListener("keyup", (event) =>{
 });
 
 function creerPlateau(){
-    let cptCase = 0
+    let cptCase = 0;
+    scoreHtml.innerHTML = score;
     layout.forEach(caseLayout => {
         let casePlateau = document.createElement("div");
         casePlateau.dataset.numerocase = cptCase;
@@ -125,6 +128,19 @@ function checkDirection(caseDestination)
         return false;
     }
     else{
+        if(caseDestination.classList.contains("point")){
+            incrementScore();
+            caseDestination.classList.remove("point");
+        }
         return true;
+    }
+}
+
+function incrementScore(){
+    score++;
+    scoreHtml.innerHTML = score;
+    let allpoints = layout.filter(l=> l==0);
+    if(score == allpoints.length){
+        alert("C'est gagné");
     }
 }
