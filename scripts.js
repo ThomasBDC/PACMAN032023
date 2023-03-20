@@ -8,8 +8,10 @@ OK Créer notre pacman
 OK Gérer ses déplacements (sans contrainte)
 OK Contraintes de déplacement (pas dans les murs)
 OK Pièces à manger
-* Gérer les fantômes
-* ...
+OK  Générer les fantômes
+Déplacer les fantômes : Moyen, en aléatoire, déplacement pas top
+Gérer collision pacman et un fantome
+Gérer les power-pellet (un mode ou pacman peut manger un fantome)
 */
 
 const layout = [
@@ -82,6 +84,11 @@ function creerPlateau(){
     });
     
     getCaseByIndex(489).classList.add("pacman");
+    generateFantome();
+
+    //Déplacement fantome aleatoire
+    setInterval(deplacerFantomes, 1000)
+
 }
 
 function getCaseByIndex(index){
@@ -96,43 +103,59 @@ function DeplacerPacman(direction){
     switch(direction){
         case "ArrowUp" :
             //Déplacer la case contenant pacman de 1 vers le haut
-            caseDestination =  getCaseByIndex(parseInt(pacManCase) - sizeCaseWidth);
-            
+            caseDestination = getNumeroCaseDestination(pacManCase, directions.Haut);
         break;
         case "ArrowRight" :
             //Déplacer la case contenant pacman de 1 vers la droite
-            caseDestination =  getCaseByIndex(parseInt(pacManCase) + 1);
+            caseDestination = getNumeroCaseDestination(pacManCase, directions.Droite);
         break;
         case "ArrowLeft" :
             //Déplacer la case contenant pacman de 1 vers la gauche
-            caseDestination =  getCaseByIndex(parseInt(pacManCase) - 1);
-        break;
+            caseDestination = getNumeroCaseDestination(pacManCase, directions.Gauche);
+            break;
         case "ArrowDown" :
-            caseDestination =  getCaseByIndex(parseInt(pacManCase) + sizeCaseWidth);
+            caseDestination = getNumeroCaseDestination(pacManCase, directions.Bas);
         default : 
             break;
     };
     if(caseDestination != null){
-        if(checkDirection(caseDestination)){
+        if(checkDirectionMur(caseDestination)){
             pacmanDiv.classList.remove("pacman");
             caseDestination.classList.add("pacman");
+            checkPointEating(caseDestination)
         }
     }
 }
 
 //return faux si je peux pas aller la où je veux
 //return vrai si je peux
-function checkDirection(caseDestination)
+function checkDirectionMur(caseDestination)
 {
     if(caseDestination.classList.contains("mur")){
         return false;
     }
     else{
-        if(caseDestination.classList.contains("point")){
-            incrementScore();
-            caseDestination.classList.remove("point");
-        }
+        
         return true;
+    }
+}
+
+//return true si on est en collision avec un fantome
+function CheckFantomeCollision(caseDestination)
+{
+    if(caseDestination.classList.contains("fantome")){
+        return true;
+    }
+    else{
+        
+        return false;
+    }
+}
+
+function checkPointEating(caseDestination){
+    if(caseDestination.classList.contains("point")){
+        incrementScore();
+        caseDestination.classList.remove("point");
     }
 }
 
@@ -144,3 +167,87 @@ function incrementScore(){
         alert("C'est gagné");
     }
 }
+
+function generateFantome(){
+    for(let i=0; i<4; i++){
+        //Je récupère les cases qui peuvent supporter la génération d'un fantôme
+        //elles ont la classe fantome-area, et n'ont pas la classe fantome
+        let casePotentialForFantome = document.querySelectorAll(".fantome-area:not(.fantome)");
+
+        //Parmis les cases dispo, j'en prends une au hasard
+        let caseForFantome = casePotentialForFantome[getRandomNumber(casePotentialForFantome.length)];
+
+        //J'ajoute la classe fantome à mon fantome
+        caseForFantome.classList.add("fantome");
+    }
+}
+
+function getRandomNumber(max){
+    return Math.floor(Math.random() * max);
+}
+
+function deplacerFantomes(){
+    //Récupérer tous mes fantômes
+    let allFantomes = document.querySelectorAll(".fantome");
+    allFantomes.forEach(fantome =>  {
+        let goodDirectionFinded = false;
+
+        while(!goodDirectionFinded){
+            let direction = getRandomNumber(4);
+            let fantomeCaseId = fantome.dataset.numerocase;
+            console.log(direction);
+            switch(direction){
+                case 0 ://haut
+                    caseDestination = getNumeroCaseDestination(fantomeCaseId, directions.Haut);
+                    break;
+                case 1 ://bas
+                    caseDestination = getNumeroCaseDestination(fantomeCaseId, directions.Bas);
+                break;
+                case 2 ://gauche
+                    caseDestination = getNumeroCaseDestination(fantomeCaseId, directions.Gauche);
+                    break;
+                case 3 ://droite
+                    caseDestination = getNumeroCaseDestination(fantomeCaseId, directions.Droite);
+                break;
+            }
+            
+            //Vérifier si je peux aller dans cette direction (pas un mur)
+            if(checkDirectionMur(caseDestination) && !CheckFantomeCollision(caseDestination)){
+                fantome.classList.remove("fantome");
+                caseDestination.classList.add("fantome");
+                goodDirectionFinded = true;
+            }   
+        }
+    });
+}
+
+function getNumeroCaseDestination(caseActuelle, direction){
+    let caseDestination = null;
+    switch(direction){
+        case directions.Haut :
+            //Déplacer la case contenant pacman de 1 vers le haut
+            caseDestination =  getCaseByIndex(parseInt(caseActuelle) - sizeCaseWidth);
+            
+        break;
+        case directions.Droite :
+            //Déplacer la case contenant pacman de 1 vers la droite
+            caseDestination =  getCaseByIndex(parseInt(caseActuelle) + 1);
+        break;
+        case directions.Gauche :
+            //Déplacer la case contenant pacman de 1 vers la gauche
+            caseDestination =  getCaseByIndex(parseInt(caseActuelle) - 1);
+        break;
+        case directions.Bas :
+            caseDestination =  getCaseByIndex(parseInt(caseActuelle) + sizeCaseWidth);
+        default : 
+            break;
+    };
+    return caseDestination;
+}
+
+const directions = {
+    Haut: 1,
+    Bas: 2,
+    Droite: 3,
+    Gauche: 4
+};
