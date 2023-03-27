@@ -195,39 +195,58 @@ function deplacerFantomes(){
     let allFantomes = document.querySelectorAll(".fantome");
     allFantomes.forEach(fantome =>  {
         let goodDirectionFinded = false;
+        let fantomeCaseId = fantome.dataset.numerocase;
 
-        // while(!goodDirectionFinded){
-            let direction = getRandomNumber(4);
-            let fantomeCaseId = fantome.dataset.numerocase;
+
+        let allDirectionsPossibles = [
+            directions.Haut,
+            directions.Bas,
+            directions.Gauche,
+            directions.Droite
+        ];
+
+        let allGoodDirections = [];
+
+        allDirectionsPossibles.forEach(direction => {
+            let isPossible = true
+            let casePossible = getNumeroCaseDestination(fantomeCaseId, direction)
+            if(!checkDirectionMur(casePossible)){
+                isPossible = false;
+            }
+            if(CheckFantomeCollision(casePossible)){
+                isPossible = false;
+            }
+
+            if(isPossible){
+                allGoodDirections.push(direction);
+            }
+        });
+
+        if(allGoodDirections.length > 1){
+            //Plusieurs direction possible, j'élimine celle qui ne va pas avec previous directrion
             let previousDirection = fantome.dataset.previousDirection;
             
-            if(previousDirection != null && previousDirection != undefined){
-                direction = parseInt(previousDirection);
-            }
-            //Direction aléatoire, changer de direction que si on rencontre un mur
+            allGoodDirections.forEach(goodDirection =>  {
+                if(!CheckFantomeNotGoBack(parseInt(previousDirection), goodDirection)){
+                    const index = allGoodDirections.indexOf(goodDirection);
+                    if (index > -1) { // only splice array when item is found
+                        allGoodDirections.splice(index, 1); // 2nd parameter means remove one item only
+                    }
+                }
+            });
+        }
 
-            console.log(direction);
+        //J'ai un tableau allGoodDirection, qui contiens toutes les bonnes directions possibles
+        //Il en faut une au hasard
+        let elementOfTable = getRandomNumber(allGoodDirections.length);
+        let direction = allGoodDirections[elementOfTable];
+        caseDestination = getNumeroCaseDestination(fantomeCaseId, direction);
 
-            console.log(getNumeroCaseDestination(fantomeCaseId, direction));
-            caseDestination = getNumeroCaseDestination(fantomeCaseId, direction);
-            if(!checkDirectionMur(caseDestination))
-            {
-                debugger;
-                direction = getRandomNumber(4);
-            }
-            caseDestination = getNumeroCaseDestination(fantomeCaseId, direction);
-
-            //Vérifier si je peux aller dans cette direction (pas un mur)
-            if(checkDirectionMur(caseDestination) 
-            && !CheckFantomeCollision(caseDestination)){
-                fantome.classList.remove("fantome");
-                fantome.removeAttribute("data-previous-direction");
-                caseDestination.classList.add("fantome");
-                caseDestination.dataset.previousDirection = direction;
-                goodDirectionFinded = true;
-            }   
-
-        //}
+        fantome.classList.remove("fantome");
+        fantome.removeAttribute("data-previous-direction");
+        caseDestination.classList.add("fantome");
+        caseDestination.dataset.previousDirection = direction;
+        goodDirectionFinded = true;
     });
 }
 
@@ -236,16 +255,16 @@ function CheckFantomeNotGoBack(previousDirection, direction){
     
     switch(previousDirection){
         case directions.Haut:
-            direction == direction.Bas ? canMove = false : canMove = true;
+            direction == directions.Bas ? canMove = false : canMove = true;
             break;
         case directions.Bas:
-            direction == direction.Haut ? canMove = false : canMove = true;
+            direction == directions.Haut ? canMove = false : canMove = true;
             break;
         case directions.Gauche:
-            direction == direction.Droite ? canMove = false : canMove = true;
+            direction == directions.Droite ? canMove = false : canMove = true;
             break;
         case directions.Droite:
-            direction == direction.Gauche ? canMove = false : canMove = true;
+            direction == directions.Gauche ? canMove = false : canMove = true;
             break;
         default:
             canMove = true;
