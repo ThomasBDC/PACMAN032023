@@ -3,6 +3,7 @@ const sizeCaseWidth = 28;
 const scoreHtml = document.getElementById("score");
 let score = 0;
 let pacmanCanEatGhost = false;
+let intervalFantome = null;
 /*
 OK Créer le plateau (dynamique)
 OK Créer notre pacman
@@ -55,13 +56,15 @@ const layout = [
 // 3 - power-pellet
 // 4 - empty
 
-creerPlateau();
-
-document.addEventListener("keyup", (event) =>{
-    DeplacerPacman(event.key);
+document.getElementById("Play").addEventListener("click", ()=> {
+    stopPartie();
+    creerPlateau();
 });
 
+
+
 function creerPlateau(){
+    gameDiv.innerHTML = "";
     let cptCase = 0;
     scoreHtml.innerHTML = score;
     layout.forEach(caseLayout => {
@@ -92,8 +95,13 @@ function creerPlateau(){
     generateFantome();
 
     //Déplacement fantome aleatoire
-    setInterval(deplacerFantomes, 1000)
+    intervalFantome = setInterval(deplacerFantomes, 1000)
 
+    document.addEventListener("keyup", onKeyupAction);
+}
+
+function onKeyupAction(event){
+    DeplacerPacman(event.key);
 }
 
 function getCaseByIndex(index){
@@ -168,6 +176,7 @@ function checkPacmanEatedByGhost(caseToCheck){
             caseToCheck.classList.remove("fantome");
         }
         else{
+            stopPartie();
             alert("PERDU !!!");
         }
     }
@@ -197,6 +206,7 @@ function incrementScore(){
     scoreHtml.innerHTML = score;
     let allpoints = layout.filter(l=> l==0);
     if(score == allpoints.length){
+        stopPartie();
         alert("C'est gagné");
     }
 }
@@ -325,6 +335,16 @@ function getNumeroCaseDestination(caseActuelle, direction){
             break;
     };
     return caseDestination;
+}
+
+//Supprimer les écouteurs d'évènements pour déplacer pacman
+//OK Arrêter le déplacement des fantômes
+function stopPartie(){
+    if(intervalFantome != null){
+        clearInterval(intervalFantome);
+    }
+
+    document.removeEventListener("keyup", onKeyupAction);
 }
 
 const directions = {

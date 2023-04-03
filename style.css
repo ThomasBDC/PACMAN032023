@@ -39,14 +39,71 @@ body, html{
 }
 
 #game div.fantome{
-    background-color: #ff1500;
+    background-image: url("pacmansprites.png");
     border-radius: 35%;
+    background-position-y: 96px;
+    background-position-x: -3px;
+    animation: fantomeAnimation 1s infinite step-end;
     border: black solid 2px;
     box-sizing: border-box;
 }
+#game div.fantome:nth-child(1n+1){
+    background-position-y: 96px;
+}
+#game div.fantome:nth-child(2n+2){
+    background-position-y: 80px;
+}
+#game div.fantome:nth-child(3n+3){
+    background-position-y: 64px;
+}
+#game div.fantome:nth-child(4n+4){
+    background-position-y: 48px;
+}
+
+@keyframes fantomeAnimation {
+    0%{
+        background-position-x: -3px;
+    }
+    15%{
+        background-position-x: -19px;
+    }
+    30%{
+        background-position-x: -35px;
+    }
+    45%{
+        background-position-x: -51px;
+    }
+    
+    60%{
+        background-position-x: -67px;
+    }
+    
+    75%{
+        background-position-x: -83px;
+    }
+    
+    90%{
+        background-position-x: -99px;
+    }
+    
+    100%{
+        background-position-x: -115px;
+    }
+}
 
 #game.pacmanCanEatGhost div.fantome{
-    background-color: #0015ff;
+    background-position-y: 96px;
+    background-position-x: -130px;
+    animation: animationGhostEaten 0.3s infinite step-end;
+}
+@keyframes animationGhostEaten {
+    0%{
+        background-position-x: -130px;
+    }
+    100%{
+        background-position-x: -147px;
+
+    }
 }
 
 #game div.point-puissance{
@@ -57,8 +114,31 @@ body, html{
 }
 
 #game div.pacman{
-    background-color: #ffee00;
+    background-image: url("pacmansprites.png");
+    background-position-x: 0px;
+    background-position-y: 0px;
+    animation: pacmanAnimation 1s infinite step-end;
     border-radius: 50%;
-    border: black solid 1px;
+    border: black solid 2px;
     box-sizing: border-box;
+}
+
+@keyframes pacmanAnimation {
+    0%{
+        background-position-x: 0px;
+    }
+    33%{
+        background-position-x: -16px;
+    }
+    66%{
+        background-position-x: -32px;
+    }
+    100%{
+
+    }
+}
+
+.manette{
+    display: flex;
+    justify-content: center;
 }
