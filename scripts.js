@@ -131,12 +131,10 @@ function DeplacerPacman(direction){
                 //Pacman peut manger les fantômes
                 caseDestination.classList.remove("point-puissance");
                 pacmanCanEatGhost = true;
-                console.log("Peut manger les fantômes");
                 gameDiv.classList.add("pacmanCanEatGhost");
                 //au bout de 5 secondes, ne plus pouvoir manger de fantômes
                 setTimeout(()=>{
                     pacmanCanEatGhost = false;
-                    console.log("Ne peut plus manger les fantômes");
                     gameDiv.classList.remove("pacmanCanEatGhost");
                 }, 5000);
             }
