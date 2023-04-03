@@ -126,7 +126,9 @@ function DeplacerPacman(direction){
         if(checkDirectionMur(caseDestination)){
             pacmanDiv.classList.remove("pacman");
             caseDestination.classList.add("pacman");
-            checkPointEating(caseDestination)
+            if(!checkPacmanEatedByGhost(caseDestination)){
+                checkPointEating(caseDestination);
+            }
         }
     }
 }
@@ -141,6 +143,17 @@ function checkDirectionMur(caseDestination)
     else{
         
         return true;
+    }
+}
+
+function checkPacmanEatedByGhost(caseToCheck){
+    let containsPacman = caseToCheck.classList.contains("pacman");
+    let containsGhost = caseToCheck.classList.contains("fantome");
+
+    if(containsPacman && containsGhost)
+    {
+        alert("PERDU !!!");
+        //Annuler tous les évènements, ou écraser le plateur...
     }
 }
 
@@ -246,6 +259,7 @@ function deplacerFantomes(){
         fantome.removeAttribute("data-previous-direction");
         caseDestination.classList.add("fantome");
         caseDestination.dataset.previousDirection = direction;
+        checkPacmanEatedByGhost(caseDestination);
         goodDirectionFinded = true;
     });
 }
