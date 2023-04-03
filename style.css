@@ -45,6 +45,10 @@ body, html{
     box-sizing: border-box;
 }
 
+#game.pacmanCanEatGhost div.fantome{
+    background-color: #0015ff;
+}
+
 #game div.point-puissance{
     background-color: #00ff66;
     border-radius: 50%;

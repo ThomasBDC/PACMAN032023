@@ -2,6 +2,7 @@ const gameDiv = document.getElementById("game");
 const sizeCaseWidth = 28;
 const scoreHtml = document.getElementById("score");
 let score = 0;
+let pacmanCanEatGhost = false;
 /*
 OK Créer le plateau (dynamique)
 OK Créer notre pacman
@@ -9,12 +10,12 @@ OK Gérer ses déplacements (sans contrainte)
 OK Contraintes de déplacement (pas dans les murs)
 OK Pièces à manger
 OK  Générer les fantômes
-Déplacer les fantômes : Moyen, en aléatoire, déplacement pas top
+OK Déplacer les fantômes : Moyen, en aléatoire, déplacement pas top
      - Changment de direction si on rencontre un mur
      - Empecher retour ou milieu
      - OU 
      - Direction au hasard hors mis direction précédente
-Gérer collision pacman et un fantome
+OK Gérer collision pacman et un fantome
 Gérer les power-pellet (un mode ou pacman peut manger un fantome)
 */
 
@@ -126,6 +127,19 @@ function DeplacerPacman(direction){
         if(checkDirectionMur(caseDestination)){
             pacmanDiv.classList.remove("pacman");
             caseDestination.classList.add("pacman");
+            if(caseDestination.classList.contains("point-puissance")){
+                //Pacman peut manger les fantômes
+                caseDestination.classList.remove("point-puissance");
+                pacmanCanEatGhost = true;
+                console.log("Peut manger les fantômes");
+                gameDiv.classList.add("pacmanCanEatGhost");
+                //au bout de 5 secondes, ne plus pouvoir manger de fantômes
+                setTimeout(()=>{
+                    pacmanCanEatGhost = false;
+                    console.log("Ne peut plus manger les fantômes");
+                    gameDiv.classList.remove("pacmanCanEatGhost");
+                }, 5000);
+            }
             if(!checkPacmanEatedByGhost(caseDestination)){
                 checkPointEating(caseDestination);
             }
@@ -152,8 +166,12 @@ function checkPacmanEatedByGhost(caseToCheck){
 
     if(containsPacman && containsGhost)
     {
-        alert("PERDU !!!");
-        //Annuler tous les évènements, ou écraser le plateur...
+        if(pacmanCanEatGhost){
+            caseToCheck.classList.remove("fantome");
+        }
+        else{
+            alert("PERDU !!!");
+        }
     }
 }
 
