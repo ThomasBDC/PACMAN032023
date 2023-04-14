@@ -129,7 +129,9 @@ function DeplacerPacman(direction){
     if(caseDestination != null){
         if(checkDirectionMur(caseDestination)){
             pacmanDiv.classList.remove("pacman");
+            pacmanDiv.dataset.direction = "";
             caseDestination.classList.add("pacman");
+            caseDestination.dataset.direction = currentDirectionPacman;
             if(caseDestination.classList.contains("point-puissance")){
                 //Pacman peut manger les fantômes
                 caseDestination.classList.remove("point-puissance");
@@ -144,6 +146,9 @@ function DeplacerPacman(direction){
             if(!checkPacmanEatedByGhost(caseDestination)){
                 checkPointEating(caseDestination);
             }
+        }
+        else{
+            pacmanDiv.dataset.direction = currentDirectionPacman;
         }
     }
 }
