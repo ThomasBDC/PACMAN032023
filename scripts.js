@@ -1,24 +1,17 @@
 const gameDiv = document.getElementById("game");
 const sizeCaseWidth = 28;
 const scoreHtml = document.getElementById("score");
+const directions = {
+    Haut: 0,
+    Bas: 1,
+    Droite: 2,
+    Gauche: 3
+};
 let score = 0;
 let pacmanCanEatGhost = false;
 let intervalFantome = null;
-/*
-OK Créer le plateau (dynamique)
-OK Créer notre pacman
-OK Gérer ses déplacements (sans contrainte)
-OK Contraintes de déplacement (pas dans les murs)
-OK Pièces à manger
-OK  Générer les fantômes
-OK Déplacer les fantômes : Moyen, en aléatoire, déplacement pas top
-     - Changment de direction si on rencontre un mur
-     - Empecher retour ou milieu
-     - OU 
-     - Direction au hasard hors mis direction précédente
-OK Gérer collision pacman et un fantome
-Gérer les power-pellet (un mode ou pacman peut manger un fantome)
-*/
+let intervalPacman = null;
+let currentDirectionPacman = directions.Gauche;
 
 const layout = [
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -64,6 +57,7 @@ document.getElementById("Play").addEventListener("click", ()=> {
 
 
 function creerPlateau(){
+    score = 0;
     gameDiv.innerHTML = "";
     let cptCase = 0;
     scoreHtml.innerHTML = score;
@@ -95,13 +89,30 @@ function creerPlateau(){
     generateFantome();
 
     //Déplacement fantome aleatoire
-    intervalFantome = setInterval(deplacerFantomes, 1000)
+    intervalFantome = setInterval(deplacerFantomes, 500);
+
+    intervalPacman = setInterval(DeplacerPacman, 500);
 
     document.addEventListener("keyup", onKeyupAction);
 }
 
 function onKeyupAction(event){
-    DeplacerPacman(event.key);
+    switch(event.key){
+        case "ArrowUp" :
+            currentDirectionPacman = directions.Haut;
+        break;
+        case "ArrowRight" :
+            currentDirectionPacman = directions.Droite;
+        break;
+        case "ArrowLeft" :
+            currentDirectionPacman = directions.Gauche;
+            break;
+        case "ArrowDown" :
+            currentDirectionPacman = directions.Bas;
+        default : 
+            break;
+    };
+    console.log(currentDirectionPacman);
 }
 
 function getCaseByIndex(index){
@@ -113,24 +124,8 @@ function DeplacerPacman(direction){
     let pacmanDiv = document.querySelector(".pacman");
     let pacManCase = pacmanDiv.dataset.numerocase;
     let caseDestination = null;
-    switch(direction){
-        case "ArrowUp" :
-            //Déplacer la case contenant pacman de 1 vers le haut
-            caseDestination = getNumeroCaseDestination(pacManCase, directions.Haut);
-        break;
-        case "ArrowRight" :
-            //Déplacer la case contenant pacman de 1 vers la droite
-            caseDestination = getNumeroCaseDestination(pacManCase, directions.Droite);
-        break;
-        case "ArrowLeft" :
-            //Déplacer la case contenant pacman de 1 vers la gauche
-            caseDestination = getNumeroCaseDestination(pacManCase, directions.Gauche);
-            break;
-        case "ArrowDown" :
-            caseDestination = getNumeroCaseDestination(pacManCase, directions.Bas);
-        default : 
-            break;
-    };
+    caseDestination = getNumeroCaseDestination(pacManCase, currentDirectionPacman);
+
     if(caseDestination != null){
         if(checkDirectionMur(caseDestination)){
             pacmanDiv.classList.remove("pacman");
@@ -343,13 +338,9 @@ function stopPartie(){
     if(intervalFantome != null){
         clearInterval(intervalFantome);
     }
+    if(intervalPacman != null){
+        clearInterval(intervalPacman);
+    }
 
     document.removeEventListener("keyup", onKeyupAction);
 }
-
-const directions = {
-    Haut: 0,
-    Bas: 1,
-    Droite: 2,
-    Gauche: 3
-};
