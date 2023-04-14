@@ -120,7 +120,7 @@ function getCaseByIndex(index){
     return caseGame;
 }
 
-function DeplacerPacman(direction){
+function DeplacerPacman(){
     let pacmanDiv = document.querySelector(".pacman");
     let pacManCase = pacmanDiv.dataset.numerocase;
     let caseDestination = null;
@@ -316,24 +316,33 @@ function getNumeroCaseDestination(caseActuelle, direction){
     let caseDestination = null;
     let directionInt = parseInt(direction);
     let caseActuelleInt = parseInt(caseActuelle);
-    switch(directionInt){
-        case directions.Haut :
-            //Déplacer la case contenant pacman de 1 vers le haut
-            caseDestination =  getCaseByIndex(caseActuelleInt - sizeCaseWidth);
-        break;
-        case directions.Droite :
-            //Déplacer la case contenant pacman de 1 vers la droite
-            caseDestination =  getCaseByIndex(caseActuelleInt + 1);
-        break;
-        case directions.Gauche :
-            //Déplacer la case contenant pacman de 1 vers la gauche
-            caseDestination =  getCaseByIndex(caseActuelleInt - 1);
-        break;
-        case directions.Bas :
-            caseDestination =  getCaseByIndex(caseActuelleInt + sizeCaseWidth);
-        default : 
+    if(caseActuelle == 364 && direction == directions.Gauche){
+        caseDestination =  getCaseByIndex(391)
+    }
+    else if(caseActuelle == 391 && direction == directions.Droite){
+        caseDestination =  getCaseByIndex(364)
+    }
+    else{
+        switch(directionInt){
+            case directions.Haut :
+                //Déplacer la case contenant pacman de 1 vers le haut
+                caseDestination =  getCaseByIndex(caseActuelleInt - sizeCaseWidth);
             break;
-    };
+            case directions.Droite :
+                //Déplacer la case contenant pacman de 1 vers la droite
+                caseDestination =  getCaseByIndex(caseActuelleInt + 1);
+            break;
+            case directions.Gauche :
+                //Déplacer la case contenant pacman de 1 vers la gauche
+                caseDestination =  getCaseByIndex(caseActuelleInt - 1);
+            break;
+            case directions.Bas :
+                caseDestination =  getCaseByIndex(caseActuelleInt + sizeCaseWidth);
+            default : 
+                break;
+        };
+    }
+    
     return caseDestination;
 }
 
